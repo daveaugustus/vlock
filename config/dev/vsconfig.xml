@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fiserv Voltage Configuration - Development Environment -->
+<!-- This file defines encryption rules, cryptIds, and masking patterns -->
+<!-- SANITIZED EXAMPLE - Replace with actual configuration from Voltage team -->
+
+<VoltageSecurityConfiguration>
+    
+    <!-- CryptID Definitions -->
+    <!-- Each cryptId defines an encryption algorithm and key for different data types -->
+    
+    <!-- SSN (Social Security Number) Encryption -->
+    <cryptId name="SSN_Internal" algorithm="FPE" key="YOUR_DEV_SSN_KEY_HERE" format="NUMERIC">
+        <description>Format-preserving encryption for SSN data</description>
+    </cryptId>
+    
+    <!-- Credit Card Number Encryption -->
+    <cryptId name="CCN_Internal" algorithm="FPE" key="YOUR_DEV_CCN_KEY_HERE" format="NUMERIC">
+        <description>Format-preserving encryption for credit card numbers</description>
+    </cryptId>
+    
+    <!-- Email Address Encryption -->
+    <cryptId name="EMAIL_Internal" algorithm="FPE" key="YOUR_DEV_EMAIL_KEY_HERE" format="ALPHANUMERIC">
+        <description>Format-preserving encryption for email addresses</description>
+    </cryptId>
+    
+    <!-- Generic Text Encryption -->
+    <cryptId name="TEXT_Internal" algorithm="AES256" key="YOUR_DEV_TEXT_KEY_HERE" format="BASE64">
+        <description>General purpose text encryption</description>
+    </cryptId>
+    
+    <!-- Binary Data Encryption -->
+    <cryptId name="BINARY_Internal" algorithm="AES256" key="YOUR_DEV_BINARY_KEY_HERE" format="BINARY">
+        <description>Binary data encryption for files and raw data</description>
+    </cryptId>
+    
+    <!-- Masking Patterns -->
+    <!-- Define how decrypted data should be partially masked -->
+    
+    <mask pattern="XXX-XX-####" cryptId="SSN_Internal">
+        <description>Mask all but last 4 digits of SSN</description>
+    </mask>
+    
+    <mask pattern="XXXX-XXXX-XXXX-####" cryptId="CCN_Internal">
+        <description>Mask all but last 4 digits of credit card</description>
+    </mask>
+    
+    <mask pattern="XXX@XXXXX.XXX" cryptId="EMAIL_Internal">
+        <description>Mask email but preserve structure</description>
+    </mask>
+    
+    <!-- Security Settings -->
+    <security>
+        <keyRotationEnabled>true</keyRotationEnabled>
+        <auditLogging>true</auditLogging>
+    </security>
+    
+</VoltageSecurityConfiguration>
