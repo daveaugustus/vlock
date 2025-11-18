@@ -1,10 +1,10 @@
 # VLock - Voltage C Library Wrapper for Go
 
-A CGO-based wrapper that provides a clean, developer-friendly Go interface for the Fiserv Voltage C (Protector) library, enabling Format-Preserving Encryption (FPE) and tokenization in Go services.
+A CGO-based wrapper that provides a clean, developer-friendly Go interface for the Voltage C (Protector) library, enabling Format-Preserving Encryption (FPE) and tokenization in Go services.
 
 ## Overview
 
-VLock simplifies the integration of Fiserv Voltage's C-based SDK into Go applications by providing a clean wrapper that eliminates the need for developers to work directly with C code. This wrapper provides one-time standardized integration for all Go services, reducing onboarding time and preventing repeated C-level integration work across teams.
+VLock simplifies the integration of Voltage's C-based SDK into Go applications by providing a clean wrapper that eliminates the need for developers to work directly with C code. This wrapper provides one-time standardized integration for all Go services, reducing onboarding time and preventing repeated C-level integration work across teams.
 
 ## Features
 
@@ -34,31 +34,31 @@ VLock simplifies the integration of Fiserv Voltage's C-based SDK into Go applica
 └────────────┬────────────────────┘
              │
 ┌────────────▼────────────────────┐
-│  Fiserv Voltage C Library       │
-│  (fiserv_protect_text, etc.)    │
+│  Voltage C Library              │
+│  (voltage_protect_text, etc.)   │
 └─────────────────────────────────┘
 ```
 
 ## Installation
 
 ```bash
-go get github.com/daveaugustus/vlock
+go get github.com/the_monkeys/vlock
 ```
 
 **Prerequisites:**
-- Fiserv Voltage C Library (Protector) installed
+- Voltage C Library (Protector) installed
 - CGO enabled
-- Valid Fiserv Voltage configuration files or environment variables
+- Valid Voltage configuration files or environment variables
 
 ## Configuration
 
 ### Overview
 
-This section addresses the key configuration requirements for the Fiserv Voltage solution, including how to acquire settings, manage them across environments, and handle security considerations like key rotation.
+This section addresses the key configuration requirements for the Voltage solution, including how to acquire settings, manage them across environments, and handle security considerations like key rotation.
 
 ### Required Configuration Parameters
 
-The Fiserv Voltage Protector library requires specific configuration parameters. These can be provided via configuration files or environment variables (environment variables take precedence).
+The Voltage Protector library requires specific configuration parameters. These can be provided via configuration files or environment variables (environment variables take precedence).
 
 | Configuration Purpose | .cfg Parameter | Environment Variable | Required |
 |----------------------|----------------|---------------------|----------|
@@ -78,14 +78,14 @@ The Fiserv Voltage Protector library requires specific configuration parameters.
 
 ### Configuration File Example
 
-**fiservprotector20.cfg:**
+**voltageprotector.cfg:**
 ```ini
 [ProtectorConfig]
 XMLConfig=./vsconfig.xml
 DefaultCryptId=SSN_Internal
 Environment=DEV
 LogLevel=2
-LogFile=/opt/fiserv/logs/protector.log
+LogFile=/opt/voltage/logs/protector.log
 
 # Application Configuration
 fp_appName=YOUR_APP_NAME
@@ -148,16 +148,16 @@ Configuration settings change when promoting between environments. Each environm
 ```
 /config
   /dev
-    fiservprotector20.cfg
+    voltageprotector.cfg
     vsconfig.xml
   /qa
-    fiservprotector20.cfg
+    voltageprotector.cfg
     vsconfig.xml
   /cat
-    fiservprotector20.cfg
+    voltageprotector.cfg
     vsconfig.xml
   /prod
-    fiservprotector20.cfg
+    voltageprotector.cfg
     vsconfig.xml
 ```
 
@@ -165,7 +165,7 @@ Configuration settings change when promoting between environments. Each environm
 
 Configuration settings are typically provided by:
 
-1. **Fiserv/Voltage Team** - Provides initial setup including:
+1. **Voltage Platform Team** - Provides initial setup including:
    - Certificate files (`.pfx`)
    - Shared secrets and credentials
    - Trust store files
@@ -208,7 +208,7 @@ The Voltage library supports automatic key rotation for enhanced security compli
 ```bash
 # Backup current configuration
 cp vsconfig.xml vsconfig.xml.backup.$(date +%Y%m%d)
-cp fiservprotector20.cfg fiservprotector20.cfg.backup.$(date +%Y%m%d)
+cp voltageprotector.cfg voltageprotector.cfg.backup.$(date +%Y%m%d)
 ```
 
 **Step 2: Request New Keys**
@@ -319,9 +319,9 @@ A: Best practices:
 
 **Q: Where can we get help with configuration issues?**  
 A: Configuration support resources:
-- [Fiserv Protector Configuration Parameters](https://enterprise-confluence.onefiserv.net/pages/viewpage.action?pageId=494549691)
+- Voltage platform documentation
 - Internal Voltage platform team
-- Fiserv C API documentation (`fiserv_api.h`)
+- Voltage C API documentation (`voltage_api.h`)
 - Voltage Protector error codes reference
 
 
@@ -335,12 +335,12 @@ package main
 import (
     "fmt"
     "log"
-    "github.com/daveaugustus/vlock"
+    "github.com/the_monkeys/vlock"
 )
 
 func main() {
     // Initialize the library
-    err := voltage.Init("/path/to/fiservprotector20.cfg")
+    err := voltage.Init("/path/to/voltageprotector.cfg")
     if err != nil {
         log.Fatal("Failed to initialize:", err)
     }
@@ -541,8 +541,8 @@ This is an internal project for The Monkeys organization. Please follow the inte
 ## Support
 
 For questions, issues, or support:
-- Internal documentation: [Fiserv Protector Configuration Parameters](https://enterprise-confluence.onefiserv.net/pages/viewpage.action?pageId=494549691)
-- Review Fiserv C API documentation (`fiserv_api.h`)
+- Internal Voltage platform documentation
+- Review Voltage C API documentation (`voltage_api.h`)
 - Check Voltage Protector error codes reference
 
 ## License
@@ -551,8 +551,8 @@ Internal use only. See your organization's licensing terms.
 
 ## Acknowledgments
 
-- Fiserv Voltage team for the C Protector library
-- Research based on Fiserv C API documentation and sample integration programs
+- Voltage platform team for the C Protector library
+- Research based on Voltage C API documentation and sample integration programs
 
 ---
 

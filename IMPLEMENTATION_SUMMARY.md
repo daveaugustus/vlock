@@ -3,13 +3,13 @@
 ## Ticket: Voltage Wrapper: Configuration
 
 ### Objective
-Implement configuration management for the VLock Voltage wrapper library to support the Fiserv Voltage platform requirements.
+Implement configuration management for the VLock Voltage wrapper library to support the Voltage platform requirements.
 
 ---
 
 ## ✅ Acceptance Criteria - All Completed
 
-### 1. Define configuration settings required by the Fiserv Voltage solution
+### 1. Define configuration settings required by the Voltage solution
 **Status: ✅ COMPLETED**
 
 Implemented comprehensive configuration structure with:
@@ -44,7 +44,7 @@ See: `config/dev/`, `config/qa/`, `config/prod/` directories and `config/README.
 **Status: ✅ COMPLETED**
 
 Documented acquisition process:
-1. **Fiserv/Voltage Team** - Provides certificates, shared secrets, trust store, XML templates
+1. **Voltage Platform Team** - Provides certificates, shared secrets, trust store, XML templates
 2. **Internal Security Team** - Manages environment-specific credentials, rotation schedules
 3. **External Teams (e.g., Finxact)** - Provides app-specific config, env vars, service accounts
 
@@ -147,11 +147,11 @@ Key rotation features:
   - TestCommentsParsing - Comment handling
 
 ### Configuration Examples
-- **config/dev/fiservprotector20.cfg** - Development configuration
+- **config/dev/voltageprotector.cfg** - Development configuration
 - **config/dev/vsconfig.xml** - Development encryption rules
-- **config/qa/fiservprotector20.cfg** - QA configuration
+- **config/qa/voltageprotector.cfg** - QA configuration
 - **config/qa/vsconfig.xml** - QA encryption rules
-- **config/prod/fiservprotector20.cfg** - Production configuration
+- **config/prod/voltageprotector.cfg** - Production configuration
 - **config/prod/vsconfig.xml** - Production encryption rules
 - **config/README.md** - Configuration guide
 
@@ -240,7 +240,7 @@ import (
 
 func main() {
     // Option 1: Load from file
-    config, err := vlock.LoadConfig("./config/dev/fiservprotector20.cfg")
+    config, err := vlock.LoadConfig("./config/dev/voltageprotector.cfg")
     if err != nil {
         log.Fatal("Failed to load config:", err)
     }
@@ -275,7 +275,7 @@ func main() {
 
 - Main documentation: `README.md`
 - Configuration guide: `config/README.md`
-- Fiserv Voltage docs: https://enterprise-confluence.onefiserv.net/pages/viewpage.action?pageId=494549691
+- Voltage platform documentation
 - Project requirements: `project.doc`
 
 ---

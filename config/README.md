@@ -7,20 +7,20 @@ This directory contains configuration files for the VLock Voltage wrapper librar
 ```
 config/
 ├── dev/
-│   ├── fiservprotector20.cfg   # Development configuration
+│   ├── voltageprotector.cfg    # Development configuration
 │   └── vsconfig.xml             # Development encryption rules
 ├── qa/
-│   ├── fiservprotector20.cfg   # QA configuration
+│   ├── voltageprotector.cfg    # QA configuration
 │   └── vsconfig.xml             # QA encryption rules
 ├── prod/
-│   ├── fiservprotector20.cfg   # Production configuration
+│   ├── voltageprotector.cfg    # Production configuration
 │   └── vsconfig.xml             # Production encryption rules
 └── README.md                    # This file
 ```
 
 ## Configuration File Types
 
-### 1. fiservprotector20.cfg
+### 1. voltageprotector.cfg
 - **Format**: INI-style key-value pairs
 - **Purpose**: Primary configuration for application settings, paths, and credentials
 - **Contains**: App info, paths, authentication, network settings, logging
@@ -34,7 +34,7 @@ config/
 
 ### Option 1: Direct File Path
 ```go
-err := voltage.Init("/path/to/config/dev/fiservprotector20.cfg")
+err := voltage.Init("/path/to/config/dev/voltageprotector.cfg")
 ```
 
 ### Option 2: Environment Variables (Recommended)
@@ -49,7 +49,7 @@ export FP_DEFAULT_SHAREDSECRET=your_secret_here
 Use config file for paths and structure, override sensitive values with environment variables:
 ```bash
 # Base configuration from file
-export CONFIG_PATH=/path/to/config/dev/fiservprotector20.cfg
+export CONFIG_PATH=/path/to/config/dev/voltageprotector.cfg
 
 # Override secrets via environment
 export FP_KEK_CERTPASSPHRASE=actual_passphrase
@@ -86,7 +86,7 @@ export FP_DEFAULT_SHAREDSECRET=actual_secret
 
 Configuration values are typically obtained from:
 
-1. **Fiserv/Voltage Team**
+1. **Voltage Platform Team**
    - Certificate files (.pfx)
    - Initial shared secrets
    - Trust store files
@@ -138,7 +138,7 @@ import (
 
 func main() {
     // Load dev configuration
-    err := voltage.Init("./config/dev/fiservprotector20.cfg")
+    err := voltage.Init("./config/dev/voltageprotector.cfg")
     if err != nil {
         log.Fatal("Init failed:", err)
     }
@@ -183,6 +183,6 @@ export FP_DEFAULT_SHAREDSECRET=$(vault read -field=secret secret/voltage/prod)
 ## Support
 
 For configuration issues or questions:
-- Review [Fiserv Protector Configuration Parameters](https://enterprise-confluence.onefiserv.net/pages/viewpage.action?pageId=494549691)
+- Review Voltage platform documentation
 - Contact Voltage platform team
 - Review main README.md for detailed documentation
