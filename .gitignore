@@ -12,6 +12,7 @@ drive-download-*.zip
 # C wrapper directory and all contents
 C wrapper/
 "C wrapper/"
+images/
 
 # Extracted source archives
 *.tar.gz

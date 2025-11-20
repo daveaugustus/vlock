@@ -5,39 +5,42 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 // Config represents the complete configuration for the Voltage Protector library
+// Uses envconfig struct tags for automatic environment variable mapping
 type Config struct {
 	// Application settings (Required)
-	AppName    string
-	AppVersion string
-	AppEnv     string // DEV, QA, CAT, PROD
+	AppName    string `envconfig:"FP_APPNAME" required:"false"`
+	AppVersion string `envconfig:"FP_APPVERSION" required:"false"`
+	AppEnv     string `envconfig:"FP_APPENV" required:"false"` // DEV, QA, CAT, PROD
 
 	// Paths (Required for most deployments)
-	SimpleAPIInstallPath string
-	TrustStorePath       string
-	XMLConfigPath        string
+	SimpleAPIInstallPath string `envconfig:"FP_SIMPLEAPI_INSTALLPATH" required:"false"`
+	TrustStorePath       string `envconfig:"FP_TRUSTSTORE_PATH" required:"false"`
+	XMLConfigPath        string `envconfig:"FP_XMLCONFIG" required:"false"`
 
 	// KEK (Key Encryption Key) settings
-	KEKCertPath       string
-	KEKCertPassphrase string
-	KEKSharedSecret   string
+	KEKCertPath       string `envconfig:"FP_KEK_CERTPATH" required:"false"`
+	KEKCertPassphrase string `envconfig:"FP_KEK_CERTPASSPHRASE" required:"false"`
+	KEKSharedSecret   string `envconfig:"FP_KEK_SHAREDSECRET" required:"false"`
 
 	// DEK (Data Encryption Key) settings
-	DEKSharedSecret string
-	DEKUsername     string
-	DEKPassword     string
+	DEKSharedSecret string `envconfig:"FP_DEFAULT_SHAREDSECRET" required:"false"`
+	DEKUsername     string `envconfig:"FP_DEFAULT_USERNAME" required:"false"`
+	DEKPassword     string `envconfig:"FP_DEFAULT_PASSWORD" required:"false"`
 
 	// Optional settings
-	NetworkTimeout     int
-	DisableCRLChecking bool
-	DefaultCryptID     string
-	LogLevel           int
-	LogFile            string
+	NetworkTimeout     int    `envconfig:"FP_NETWORKTIMEOUT" default:"10"`
+	DisableCRLChecking bool   `envconfig:"FP_DISABLECRLCHECKING" default:"false"`
+	DefaultCryptID     string `envconfig:"FP_DEFAULT_CRYPTID" required:"false"`
+	LogLevel           int    `envconfig:"FP_LOGLEVEL" default:"2"`
+	LogFile            string `envconfig:"FP_LOGFILE" required:"false"`
 
 	// Internal
-	ConfigFilePath string
+	ConfigFilePath string `envconfig:"-"` // Not from environment
 }
 
 // Environment variable names mapped to configuration fields
@@ -96,8 +99,10 @@ func LoadConfig(configPath string) (*Config, error) {
 		// If file doesn't exist, continue with defaults and env vars
 	}
 
-	// Apply environment variable overrides
-	config.loadFromEnv()
+	// Apply environment variable overrides using envconfig
+	if err := config.loadFromEnv(); err != nil {
+		return nil, fmt.Errorf("failed to load environment variables: %w", err)
+	}
 
 	// Validate required fields
 	if err := config.Validate(); err != nil {
@@ -190,48 +195,88 @@ func (c *Config) setConfigValue(key, value string) {
 
 // loadFromEnv applies environment variable overrides to the configuration
 // Environment variables take precedence over file-based configuration
-func (c *Config) loadFromEnv() {
-	if val := os.Getenv(EnvAppName); val != "" {
-		c.AppName = val
+// Uses envconfig library for automatic struct tag-based mapping
+func (c *Config) loadFromEnv() error {
+	// Create a temporary struct to capture only env vars that are set
+	type envOverrides struct {
+		AppName              string `envconfig:"FP_APPNAME"`
+		AppVersion           string `envconfig:"FP_APPVERSION"`
+		AppEnv               string `envconfig:"FP_APPENV"`
+		SimpleAPIInstallPath string `envconfig:"FP_SIMPLEAPI_INSTALLPATH"`
+		TrustStorePath       string `envconfig:"FP_TRUSTSTORE_PATH"`
+		XMLConfigPath        string `envconfig:"FP_XMLCONFIG"`
+		KEKCertPath          string `envconfig:"FP_KEK_CERTPATH"`
+		KEKCertPassphrase    string `envconfig:"FP_KEK_CERTPASSPHRASE"`
+		KEKSharedSecret      string `envconfig:"FP_KEK_SHAREDSECRET"`
+		DEKSharedSecret      string `envconfig:"FP_DEFAULT_SHAREDSECRET"`
+		DEKUsername          string `envconfig:"FP_DEFAULT_USERNAME"`
+		DEKPassword          string `envconfig:"FP_DEFAULT_PASSWORD"`
+		NetworkTimeout       int    `envconfig:"FP_NETWORKTIMEOUT"`
+		DisableCRLChecking   bool   `envconfig:"FP_DISABLECRLCHECKING"`
+		DefaultCryptID       string `envconfig:"FP_DEFAULT_CRYPTID"`
+		LogLevel             int    `envconfig:"FP_LOGLEVEL"`
+		LogFile              string `envconfig:"FP_LOGFILE"`
 	}
-	if val := os.Getenv(EnvAppVersion); val != "" {
-		c.AppVersion = val
+
+	var overrides envOverrides
+	if err := envconfig.Process("", &overrides); err != nil {
+		return fmt.Errorf("failed to process environment variables: %w", err)
 	}
-	if val := os.Getenv(EnvAppEnv); val != "" {
-		c.AppEnv = strings.ToUpper(val)
+
+	// Only apply non-zero values (meaning they were set in environment)
+	if overrides.AppName != "" {
+		c.AppName = overrides.AppName
 	}
-	if val := os.Getenv(EnvSimpleAPIInstallPath); val != "" {
-		c.SimpleAPIInstallPath = val
+	if overrides.AppVersion != "" {
+		c.AppVersion = overrides.AppVersion
 	}
-	if val := os.Getenv(EnvTrustStorePath); val != "" {
-		c.TrustStorePath = val
+	if overrides.AppEnv != "" {
+		c.AppEnv = strings.ToUpper(overrides.AppEnv)
 	}
-	if val := os.Getenv(EnvKEKCertPath); val != "" {
-		c.KEKCertPath = val
+	if overrides.SimpleAPIInstallPath != "" {
+		c.SimpleAPIInstallPath = overrides.SimpleAPIInstallPath
 	}
-	if val := os.Getenv(EnvKEKCertPassphrase); val != "" {
-		c.KEKCertPassphrase = val
+	if overrides.TrustStorePath != "" {
+		c.TrustStorePath = overrides.TrustStorePath
 	}
-	if val := os.Getenv(EnvKEKSharedSecret); val != "" {
-		c.KEKSharedSecret = val
+	if overrides.XMLConfigPath != "" {
+		c.XMLConfigPath = overrides.XMLConfigPath
 	}
-	if val := os.Getenv(EnvDEKSharedSecret); val != "" {
-		c.DEKSharedSecret = val
+	if overrides.KEKCertPath != "" {
+		c.KEKCertPath = overrides.KEKCertPath
 	}
-	if val := os.Getenv(EnvDEKUsername); val != "" {
-		c.DEKUsername = val
+	if overrides.KEKCertPassphrase != "" {
+		c.KEKCertPassphrase = overrides.KEKCertPassphrase
 	}
-	if val := os.Getenv(EnvDEKPassword); val != "" {
-		c.DEKPassword = val
+	if overrides.KEKSharedSecret != "" {
+		c.KEKSharedSecret = overrides.KEKSharedSecret
 	}
-	if val := os.Getenv(EnvNetworkTimeout); val != "" {
-		if timeout, err := strconv.Atoi(val); err == nil {
-			c.NetworkTimeout = timeout
-		}
+	if overrides.DEKSharedSecret != "" {
+		c.DEKSharedSecret = overrides.DEKSharedSecret
 	}
-	if val := os.Getenv(EnvDisableCRLChecking); val != "" {
-		c.DisableCRLChecking = strings.ToLower(val) == "true"
+	if overrides.DEKUsername != "" {
+		c.DEKUsername = overrides.DEKUsername
 	}
+	if overrides.DEKPassword != "" {
+		c.DEKPassword = overrides.DEKPassword
+	}
+	if os.Getenv("FP_NETWORKTIMEOUT") != "" {
+		c.NetworkTimeout = overrides.NetworkTimeout
+	}
+	if os.Getenv("FP_DISABLECRLCHECKING") != "" {
+		c.DisableCRLChecking = overrides.DisableCRLChecking
+	}
+	if overrides.DefaultCryptID != "" {
+		c.DefaultCryptID = overrides.DefaultCryptID
+	}
+	if os.Getenv("FP_LOGLEVEL") != "" {
+		c.LogLevel = overrides.LogLevel
+	}
+	if overrides.LogFile != "" {
+		c.LogFile = overrides.LogFile
+	}
+
+	return nil
 }
 
 // Validate ensures all required configuration parameters are present
