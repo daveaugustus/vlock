@@ -1,4 +1,4 @@
-package vlock
+package config
 
 import (
 	"fmt"
