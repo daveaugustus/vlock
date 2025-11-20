@@ -1,0 +1,260 @@
+# VLock - Go Voltage Wrapper
+# .gitignore
+
+# ============================================================================
+# Extracted Documentation and Source Files (Keep out of repo)
+# ============================================================================
+
+# Zip archives
+*.zip
+drive-download-*.zip
+
+# C wrapper directory and all contents
+C wrapper/
+"C wrapper/"
+
+# Extracted source archives
+*.tar.gz
+fiserv-c-protector*/
+
+# Example files from extraction
+example.txt
+test_golang.go
+
+# Old config file format (renamed to voltageprotector.cfg)
+fiservprotector*.cfg
+"fiservprotector 20.cfg"
+
+# ============================================================================
+# Sensitive Configuration Files
+# ============================================================================
+
+# Configuration files with actual credentials
+**/voltageprotector.cfg
+**/vsconfig.xml
+**/*.pfx
+**/*.pem
+**/*.key
+**/*.crt
+
+# Keep example/template configs
+!config/dev/voltageprotector.cfg
+!config/qa/voltageprotector.cfg
+!config/prod/voltageprotector.cfg
+!config/dev/vsconfig.xml
+!config/qa/vsconfig.xml
+!config/prod/vsconfig.xml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Secrets
+secrets/
+*.secret
+
+# ============================================================================
+# Go Build Artifacts
+# ============================================================================
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+coverage.txt
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# ============================================================================
+# IDE and Editor Files
+# ============================================================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ============================================================================
+# OS Files
+# ============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ============================================================================
+# C/C++ Build Artifacts
+# ============================================================================
+
+# Compiled Object files
+*.o
+*.obj
+*.ko
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared libraries
+*.so.*
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# ============================================================================
+# Documentation Build Artifacts
+# ============================================================================
+
+# HTML documentation
+*.html
+!README.html
+
+# RTF files
+*.rtf
+
+# PDF files (unless explicitly needed)
+*.pdf
+
+# ============================================================================
+# Logs and Temporary Files
+# ============================================================================
+
+# Log files
+*.log
+logs/
+*.log.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# ============================================================================
+# Test and Development Files
+# ============================================================================
+
+# Test data
+testdata/*
+!testdata/.gitkeep
+
+# Benchmark results
+*.bench
+
+# Debug
+debug
+debug.test
+
+# ============================================================================
+# Voltage Library Specific
+# ============================================================================
+
+# Voltage installation directories
+/opt/voltage/
+voltage-simple-api*/
+
+# Library files that should be installed separately
+libfiservprotect.*
+libvibesimple.*
+
+# Trust store files
+trustStore/
+
+# ============================================================================
+# Project Specific Exclusions
+# ============================================================================
+
+# Original project documentation (keep for reference but don't commit updates)
+project.doc
+
+# Implementation summaries (optional - uncomment if you don't want to track)
+# FISERV_REMOVAL_SUMMARY.md
+# IMPLEMENTATION_SUMMARY.md
+
+# ============================================================================
+# Build and Distribution
+# ============================================================================
+
+# Distribution packages
+dist/
+build/
+*.tar
+*.zip
+
+# Generated files
+*_generated.go
+
+# ============================================================================
+# Security Scanning
+# ============================================================================
+
+# Security scan results
+.snyk
+snyk.json
+
+# Dependency check
+dependency-check-report.*
+
+# ============================================================================

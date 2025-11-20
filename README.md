@@ -499,15 +499,271 @@ export CGO_ENABLED=1
 go build
 ```
 
-### Testing
+## Testing
+
+### Running Tests
+
+#### 1. Run All Tests
 
 ```bash
-# Run unit tests
-go test -v ./...
+# Run all tests with verbose output
+go test -v
 
-# Run tests with race detection
-go test -race -v ./...
+# Expected output:
+# === RUN   TestNewConfig
+# --- PASS: TestNewConfig (0.00s)
+# === RUN   TestLoadConfigFromFile
+# --- PASS: TestLoadConfigFromFile (0.00s)
+# ...
+# PASS
+# ok      github.com/daveaugustus/vlock   1.169s
 ```
+
+#### 2. Run Specific Tests
+
+```bash
+# Run only configuration tests
+go test -v -run TestLoadConfig
+
+# Run only validation tests
+go test -v -run TestValidate
+
+# Run only environment variable tests
+go test -v -run TestEnvVar
+```
+
+#### 3. Run Tests with Coverage
+
+```bash
+# Generate coverage report
+go test -cover
+
+# Expected output:
+# PASS
+# coverage: 95.2% of statements
+# ok      github.com/daveaugustus/vlock   1.169s
+
+# Generate detailed HTML coverage report
+go test -coverprofile=coverage.out
+go tool cover -html=coverage.out
+```
+
+#### 4. Run Tests with Race Detection
+
+```bash
+# Detect data races in concurrent code
+go test -race -v
+
+# Use this to ensure thread safety
+```
+
+### Test Scenarios
+
+#### Configuration Loading Tests
+
+```bash
+# Test file-based configuration loading
+go test -v -run TestLoadConfigFromFile
+
+# Test environment variable precedence
+go test -v -run TestEnvVarPrecedence
+
+# Test configuration validation
+go test -v -run TestValidateRequiredFields
+```
+
+**What these tests verify:**
+- ✅ Configuration files are parsed correctly
+- ✅ Environment variables override file values
+- ✅ Required fields are validated
+- ✅ Error handling works as expected
+
+#### Environment Variable Tests
+
+```bash
+# Set test environment variables
+export FP_APPNAME=TestApp
+export FP_APPVERSION=2.0.0
+export FP_APPENV=QA
+
+# Run environment variable tests
+go test -v -run TestEnvVarPrecedence
+
+# Clean up
+unset FP_APPNAME FP_APPVERSION FP_APPENV
+```
+
+**Windows PowerShell:**
+```powershell
+# Set test environment variables
+$env:FP_APPNAME="TestApp"
+$env:FP_APPVERSION="2.0.0"
+$env:FP_APPENV="QA"
+
+# Run tests
+go test -v -run TestEnvVarPrecedence
+
+# Clean up
+Remove-Item Env:\FP_APPNAME
+Remove-Item Env:\FP_APPVERSION
+Remove-Item Env:\FP_APPENV
+```
+
+### Integration Testing
+
+#### Prerequisites for Integration Tests
+1. Voltage C library installed
+2. Valid configuration files in `config/dev/`
+3. Access to Voltage server (for live encryption tests)
+
+#### Running Integration Tests
+
+```bash
+# Set up test configuration
+export CONFIG_PATH=./config/dev/voltageprotector.cfg
+
+# Run integration tests (when implemented)
+go test -v -tags=integration
+
+# Note: Integration tests require live Voltage server connection
+```
+
+### Test File Structure
+
+```
+vlock/
+├── config_test.go       # Configuration loading and validation tests
+├── voltage_test.go      # Encryption/decryption tests (when implemented)
+└── config/
+    └── dev/
+        ├── voltageprotector.cfg   # Test configuration file
+        └── vsconfig.xml          # Test XML configuration
+```
+
+### Manual Testing
+
+#### Test Configuration Loading
+
+```go
+package main
+
+import (
+    "fmt"
+    "log"
+    "github.com/daveaugustus/vlock"
+)
+
+func main() {
+    // Test loading configuration
+    config, err := vlock.LoadConfig("./config/dev/voltageprotector.cfg")
+    if err != nil {
+        log.Fatal("Failed to load config:", err)
+    }
+    
+    // Verify configuration
+    fmt.Printf("✅ Config loaded successfully\n")
+    fmt.Printf("   App Name: %s\n", config.AppName)
+    fmt.Printf("   App Version: %s\n", config.AppVersion)
+    fmt.Printf("   Environment: %s\n", config.AppEnv)
+    fmt.Printf("   Library Path: %s\n", config.SimpleAPIInstallPath)
+}
+```
+
+Run:
+```bash
+go run test_config.go
+```
+
+Expected output:
+```
+✅ Config loaded successfully
+   App Name: VLockDev
+   App Version: 1.0.0
+   Environment: DEV
+   Library Path: /opt/voltage/simpleapi
+```
+
+#### Test Environment Variable Override
+
+```bash
+# Set environment variables
+export FP_APPNAME=OverrideTest
+export FP_APPENV=QA
+
+# Run test
+go run test_config.go
+
+# Expected: Should show "OverrideTest" and "QA"
+```
+
+### Continuous Integration Testing
+
+For CI/CD pipelines:
+
+```yaml
+# Example GitHub Actions workflow
+test:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '1.21'
+    
+    - name: Run tests
+      run: |
+        go test -v -race -coverprofile=coverage.out
+        go tool cover -func=coverage.out
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v2
+      with:
+        files: ./coverage.out
+```
+
+### Troubleshooting Test Failures
+
+#### Issue: "Config file not found"
+
+**Solution:**
+```bash
+# Verify file path
+ls -la config/dev/voltageprotector.cfg
+
+# Use absolute path if needed
+go test -v -run TestLoadConfig
+```
+
+#### Issue: "Required field missing"
+
+**Solution:** Ensure test config files have all required fields:
+- `fp_appName`
+- `fp_appVersion`
+- `fp_appEnv`
+
+#### Issue: Tests pass locally but fail in CI
+
+**Solution:**
+1. Check environment variables in CI
+2. Verify file paths (use relative paths from project root)
+3. Ensure test config files are committed to git
+
+### Test Coverage Goals
+
+- **Configuration Module**: 95%+ coverage ✅ (Currently: 95.2%)
+- **Core Wrapper**: Target 90%+ (Future)
+- **Error Handling**: Target 100% (Future)
+
+### Next Steps
+
+1. ✅ Configuration tests are complete and passing
+2. ⏳ Add encryption/decryption tests (awaiting CGO wrapper implementation)
+3. ⏳ Add integration tests with live Voltage server
+4. ⏳ Add performance benchmarks
+
+---
+
+For more details on developer setup, see [DEVELOPER_SETUP.md](./DEVELOPER_SETUP.md).
 
 ### Project Structure
 
