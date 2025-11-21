@@ -45,6 +45,12 @@ fiservprotector*.cfg
 !config/dev/vsconfig.xml
 !config/qa/vsconfig.xml
 !config/prod/vsconfig.xml
+!pkg/config/dev/voltageprotector.cfg
+!pkg/config/qa/voltageprotector.cfg
+!pkg/config/prod/voltageprotector.cfg
+!pkg/config/dev/vsconfig.xml
+!pkg/config/qa/vsconfig.xml
+!pkg/config/prod/vsconfig.xml
 
 # Environment files
 .env
